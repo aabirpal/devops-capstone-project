@@ -23,10 +23,8 @@ from service import routes, models  # noqa: F401 E402
 from service.common import error_handlers, cli_commands  # noqa: F401 E402
 
 log_handlers.init_logging(app, "gunicorn.error")
-
 try:
     models.init_db(app)
 except Exception as error:
     app.logger.critical("%s: Cannot continue", error)
     sys.exit(4)
- 
