@@ -1,5 +1,8 @@
 import sys
 from flask import Flask
+from flask_talisman import Talisman
+from flask_cors import CORS
+
 from service import config
 from service.common import log_handlers
 
@@ -10,8 +13,11 @@ app.config.from_object(config)
 app.url_map.strict_slashes = False
 app.config["PREFERRED_URL_SCHEME"] = "http"
 
-# DO NOT ENABLE TALISMAN (breaks tests in this lab)
-# DO NOT ENABLE CORS (not required for grading tests)
+# Security Headers
+talisman = Talisman(app, force_https=False)
+
+# CORS
+CORS(app)
 
 from service import routes, models  # noqa: F401 E402
 from service.common import error_handlers, cli_commands  # noqa: F401 E402
