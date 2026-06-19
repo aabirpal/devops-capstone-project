@@ -22,7 +22,7 @@ spec:
         name: accounts
         env:
         - name: DATABASE_URI
-          value: postgresql://postgres:postgres@postgresql:5432/postgres
+          value: postgresql://userIGC:XM5f2diddKSIxBgM@postgresql:5432/sampledb
         resources: {}
 status: {}
 env:
