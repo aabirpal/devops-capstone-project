@@ -78,4 +78,3 @@ def delete_accounts(account_id):
 def check_content_type(media_type):
     if request.headers.get("Content-Type") != media_type:
         abort(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-        
