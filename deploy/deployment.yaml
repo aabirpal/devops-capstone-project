@@ -20,6 +20,9 @@ spec:
       containers:
       - image: IMAGE_NAME_HERE
         name: accounts
+        env:
+        - name: DATABASE_URI
+          value: postgresql://postgres:postgres@postgresql:5432/postgres
         resources: {}
 status: {}
 env:
