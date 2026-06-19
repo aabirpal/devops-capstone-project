@@ -23,4 +23,3 @@ try:
 except Exception as error:
     app.logger.critical("%s: Cannot continue", error)
     sys.exit(4)
-    
