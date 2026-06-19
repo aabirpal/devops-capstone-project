@@ -1,25 +1,23 @@
-"""
-Account Service
-
-This microservice handles the lifecycle of Accounts
-"""
-# pylint: disable=unused-import
-from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
+from flask import jsonify, request, make_response, abort
 from service.models import Account
-from service.common import status  # HTTP Status Codes
-from . import app  # Import Flask application
+from service.common import status
+from . import app
 
 
+<<<<<<< HEAD
 ############################################################
 # Health Endpoint
 ############################################################
 
 @app.route("/health")
+=======
+@app.route("/health", methods=["GET"])
+>>>>>>> 5feb753 (add security headers and cors)
 def health():
-    """Health Status"""
-    return jsonify(dict(status="OK")), status.HTTP_200_OK
+    return jsonify(status="OK"), status.HTTP_200_OK
 
 
+<<<<<<< HEAD
 ######################################################################
 # GET INDEX
 ######################################################################
@@ -48,32 +46,57 @@ def create_accounts():
     """
     app.logger.info("Request to create an Account")
     check_content_type("application/json")
+=======
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify(
+        name="Account REST API Service",
+        version="1.0"
+    ), status.HTTP_200_OK
+
+
+@app.route("/accounts", methods=["POST"])
+def create_accounts():
+    if request.headers.get("Content-Type") != "application/json":
+        abort(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+>>>>>>> 5feb753 (add security headers and cors)
 
     account = Account()
     account.deserialize(request.get_json())
     account.create()
 
+<<<<<<< HEAD
     message = account.serialize()
 
     location_url = url_for("get_accounts", account_id=account.id, _external=True)
 
     return make_response(
         jsonify(message),
+=======
+    serialized = account.serialize()
+
+    # REQUIRED by tests: Location header must exist
+    location_url = f"/accounts/{account.id}"
+
+    return (
+        jsonify(serialized),
+>>>>>>> 5feb753 (add security headers and cors)
         status.HTTP_201_CREATED,
         {"Location": location_url},
     )
 
 
+<<<<<<< HEAD
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
 
+=======
+>>>>>>> 5feb753 (add security headers and cors)
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
-    """
-    List all Accounts
-    """
     accounts = Account.all()
+<<<<<<< HEAD
 
     account_list = [account.serialize() for account in accounts]
 
@@ -84,30 +107,31 @@ def list_accounts():
 # READ AN ACCOUNT
 ######################################################################
 
+=======
+    return jsonify([a.serialize() for a in accounts]), status.HTTP_200_OK
+
+
+>>>>>>> 5feb753 (add security headers and cors)
 @app.route("/accounts/<int:account_id>", methods=["GET"])
 def get_accounts(account_id):
-    """
-    Read an Account
-    """
-    app.logger.info("Request to read Account with id: %s", account_id)
-
     account = Account.find(account_id)
 
     if not account:
+<<<<<<< HEAD
         abort(
             status.HTTP_404_NOT_FOUND,
             f"Account with id [{account_id}] could not be found.",
         )
+=======
+        abort(status.HTTP_404_NOT_FOUND)
+>>>>>>> 5feb753 (add security headers and cors)
 
-    return account.serialize(), status.HTTP_200_OK
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
-
-######################################################################
-# UPDATE AN EXISTING ACCOUNT
-######################################################################
 
 @app.route("/accounts/<int:account_id>", methods=["PUT"])
 def update_accounts(account_id):
+<<<<<<< HEAD
     """
     Update an Account
     """
@@ -118,27 +142,36 @@ def update_accounts(account_id):
             status.HTTP_404_NOT_FOUND,
             f"Account with id [{account_id}] could not be found.",
         )
+=======
+    if not request.headers.get("Content-Type") == "application/json":
+        abort(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    account = Account.find(account_id)
+
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND)
+>>>>>>> 5feb753 (add security headers and cors)
 
     account.deserialize(request.get_json())
     account.update()
 
-    return account.serialize(), status.HTTP_200_OK
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
-
-######################################################################
-# DELETE AN ACCOUNT
-######################################################################
 
 @app.route("/accounts/<int:account_id>", methods=["DELETE"])
 def delete_accounts(account_id):
+<<<<<<< HEAD
     """
     Delete an Account
     """
+=======
+>>>>>>> 5feb753 (add security headers and cors)
     account = Account.find(account_id)
 
     if account:
         account.delete()
 
+<<<<<<< HEAD
     return "", status.HTTP_204_NO_CONTENT
 
 
@@ -159,3 +192,6 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
+=======
+    return "", status.HTTP_204_NO_CONTENT
+>>>>>>> 5feb753 (add security headers and cors)
