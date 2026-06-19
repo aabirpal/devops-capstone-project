@@ -12,13 +12,14 @@ from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
+from service import talisman
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
 BASE_URL = "/accounts"
-
+HTTPS_ENVIRON = {"wsgi.url_scheme": "https"}
 
 ######################################################################
 #  T E S T   C A S E S
@@ -28,11 +29,13 @@ class TestAccountService(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Run once before all tests"""
         app.config["TESTING"] = True
         app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
+
+        talisman.force_https = False
+
         init_db(app)
 
     @classmethod
@@ -220,6 +223,53 @@ class TestAccountService(TestCase):
             status.HTTP_204_NO_CONTENT
         )
     
+    def test_security_headers(self):
+        """It should return security headers"""
+
+        response = self.client.get(
+            "/",
+            environ_overrides=HTTPS_ENVIRON
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK
+        )
+
+        headers = {
+            "X-Frame-Options": "SAMEORIGIN",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Security-Policy": "default-src 'self'; object-src 'none'",
+            "Referrer-Policy": "strict-origin-when-cross-origin",
+        }
+
+        for key, value in headers.items():
+            self.assertEqual(
+                response.headers.get(key),
+                value
+            )
+
+
+    def test_cors_security(self):
+        """It should return CORS headers"""
+
+        response = self.client.get(
+            "/",
+            environ_overrides=HTTPS_ENVIRON
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK
+        )
+
+        self.assertEqual(
+            response.headers.get(
+                "Access-Control-Allow-Origin"
+            ),
+            "*"
+        )
+
     def test_method_not_allowed(self):
         """It should not allow an illegal method call"""
 
