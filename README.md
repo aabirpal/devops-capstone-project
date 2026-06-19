@@ -1,5 +1,7 @@
 # devops-capstone-project
 
+![Build Status](https://github.com/aabirpal/devops-capstone-project/actions/workflows/ci-build.yaml/badge.svg)
+
 This project contains planning and development artifacts for a customer accounts microservice used in an e-commerce platform.
 
 The service will support:
